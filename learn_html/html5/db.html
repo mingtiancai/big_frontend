@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IndexedDB Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        input, button {
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>IndexedDB 示例</h1>
+    <input type="text" id="item" placeholder="输入项目名">
+    <button id="add">添加项目</button>
+    <button id="get">获取所有项目</button>
+    <button id="delete">清空数据库</button>
+    
+    <h2>数据库内容:</h2>
+    <ul id="itemsList"></ul>
+
+    <script>
+        const request = indexedDB.open("MyDatabase", 1);
+        
+        let db;
+
+        request.onsuccess = function(event) {
+            db = event.target.result;
+            console.log("数据库打开成功");
+        };
+
+        request.onupgradeneeded = function(event) {
+            db = event.target.result;
+            const objectStore = db.createObjectStore("items", { keyPath: "id", autoIncrement: true });
+            console.log("对象存储区创建成功");
+        };
+
+        request.onerror = function(event) {
+            console.error("数据库打开失败", event);
+        };
+
+        // 添加项目
+        document.getElementById('add').onclick = function() {
+            const itemName = document.getElementById('item').value;
+            if (itemName) {
+                const transaction = db.transaction("items", "readwrite");
+                const objectStore = transaction.objectStore("items");
+                objectStore.add({ name: itemName });
+                
+                transaction.onsuccess = function() {
+                    console.log("项目添加成功:", itemName);
+                    document.getElementById('item').value = '';  // 清空输入框
+                };
+
+                transaction.onerror = function() {
+                    console.error("项目添加失败");
+                };
+            }
+        };
+
+        // 获取所有项目
+        document.getElementById('get').onclick = function() {
+            const transaction = db.transaction("items", "readonly");
+            const objectStore = transaction.objectStore("items");
+            const request = objectStore.getAll();
+
+            request.onsuccess = function(event) {
+                const items = event.target.result;
+                const itemsList = document.getElementById('itemsList');
+                itemsList.innerHTML = '';  // 清空列表
+                items.forEach(item => {
+                    const li = document.createElement('li');
+                    li.textContent = item.name;
+                    itemsList.appendChild(li);
+                });
+            };
+        };
+
+        // 清空数据库
+        document.getElementById('delete').onclick = function() {
+            const transaction = db.transaction("items", "readwrite");
+            const objectStore = transaction.objectStore("items");
+            const request = objectStore.clear();
+
+            request.onsuccess = function() {
+                console.log("数据库清空成功");
+                document.getElementById('itemsList').innerHTML = '';  // 清空列表
+            };
+
+            request.onerror = function() {
+                console.error("清空数据库失败");
+            };
+        };
+    </script>
+</body>
+</html>
