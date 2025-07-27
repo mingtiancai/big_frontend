@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>菜鸟教程(runoob.com)</title>
+</head>
+<body>
+
+<h2>JavaScript 类继承</h2>
+
+<p>JavaScript 类继承使用 extends 关键字。</p>
+<p>"super" 方法用于调用父类的构造函数。</p>
+
+<p id="demo"></p>
+
+<script>
+class Animal {
+  constructor(name) {
+    this.name = name;
+  }
+ 
+  eat() {
+    console.log(this.name + " is eating.");
+  }
+}
+ 
+class Dog extends Animal {
+  constructor(name, breed) {
+    super(name);
+    this.breed = breed;
+  }
+ 
+  bark() {
+    console.log(this.name + " is barking.");
+  }
+}
+
+const dog = new Dog("Buddy", "Labrador");
+dog.eat();
+dog.bark();
+</script>
+
+</body>
+</html>
