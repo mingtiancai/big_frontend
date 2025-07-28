@@ -3,3 +3,4 @@ learn_ts/*.js
 learn_ts/node_modules/*
 learn_ts/package-lock.json
 learn_ts/package.json
+learn_vue/hello-world/node_modules/*
